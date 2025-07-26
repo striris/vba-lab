@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Assisted VBA Lab</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #40ae59 0%, #369c4e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .mode-btn {
+            background: transparent;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .mode-btn.active {
+            background: #40ae59;
+            color: white;
+            box-shadow: 0 2px 10px rgba(64, 174, 89, 0.3);
+        }
+
+        .mode-btn:hover:not(.active) {
+            background: rgba(64, 174, 89, 0.1);
+            color: #40ae59;
+        }
+
+        .translator-section {
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            background: #fafafa;
+            transition: all 0.3s ease;
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #40ae59;
+            background: white;
+            box-shadow: 0 0 20px rgba(64, 174, 89, 0.2);
+        }
+
+        .translate-btn {
+            background: linear-gradient(135deg, #40ae59 0%, #369c4e 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .translate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(64, 174, 89, 0.3);
+        }
+
+        .translate-btn:active {
+            transform: translateY(0);
+        }
+
+        .result-section {
+            margin-top: 30px;
+        }
+
+        .code-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 1em;
+            line-height: 1.6;
+            overflow-x: auto;
+            min-height: 100px;
+            border: 2px solid #333;
+            position: relative;
+        }
+
+        .explanation-output {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            padding: 25px;
+            border-radius: 12px;
+            font-size: 1em;
+            line-height: 1.6;
+            min-height: 100px;
+            color: #333;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #40ae59;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        .examples-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 40px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .example-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            border-color: #40ae59;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .example-formula {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .example-description {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        .error-message {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #c62828;
+            margin-top: 15px;
+        }
+
+        .explanation-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #40ae59;
+        }
+
+        .explanation-title {
+            font-weight: 600;
+            color: #40ae59;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        .code-breakdown {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            margin: 10px 0;
+            border-left: 3px solid #40ae59;
+        }
+
+        .parameter-list {
+            margin: 10px 0;
+        }
+
+        .parameter-item {
+            background: #e8f5e8;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 6px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        }
+
+        .highlight-code {
+            background: #fff3cd;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            color: #856404;
+        }
+
+        /* VBA Basics Styles */
+        .basics-content {
+            max-width: 100%;
+        }
+
+        .basics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .basics-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #40ae59;
+        }
+
+        .basics-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .code-example {
+            margin: 15px 0;
+        }
+
+        .code-title {
+            font-weight: 600;
+            color: #40ae59;
+            margin-bottom: 8px;
+            font-size: 1em;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+            overflow-x: auto;
+        }
+
+        .tips-list {
+            margin: 15px 0;
+        }
+
+        .tip-item {
+            background: #f8f9fa;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 8px;
+            border-left: 3px solid #40ae59;
+        }
+
+        .getting-started ol, .getting-started ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .getting-started li {
+            margin: 5px 0;
+        }
+
+        kbd {
+            background: #f1f1f1;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .basics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>AI-Assisted VBA Lab</h1>
+            <p id="headerDescription">Convert Excel formulas to VBA code • Understand VBA code with AI explanations • Learn VBA fundamentals</p>
+        </div>
+
+        <div class="main-content">
+            <!-- Mode Toggle -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="display: inline-flex; background: #f0f0f0; border-radius: 25px; padding: 5px;">
+                    <button class="mode-btn active" id="translateMode" onclick="switchMode('translate')">Excel → VBA</button>
+                    <button class="mode-btn" id="explainMode" onclick="switchMode('explain')">Explain VBA</button>
+                    <button class="mode-btn" id="basicsMode" onclick="switchMode('basics')">VBA Basics</button>
+                </div>
+            </div>
+
+            <!-- Excel to VBA Translator Section -->
+            <div class="translator-section" id="translateSection">
+                <div class="input-group">
+                    <label for="excelFunction">Enter Excel Function or Formula:</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="excelFunction" placeholder="e.g., =SUM(A1:A10), =VLOOKUP(B2,D:E,2,FALSE), =IF(A1>10,&quot;High&quot;,&quot;Low&quot;)" />
+                    </div>
+                </div>
+                <button class="translate-btn" onclick="translateFunction()">Translate to VBA</button>
+                
+                <div class="result-section">
+                    <label>VBA Code Output:</label>
+                    <div class="code-output" id="vbaOutput">
+                        <button class="copy-btn" onclick="copyToClipboard('vbaOutput')" style="display: none;">Copy</button>
+                        Enter an Excel function above to see the VBA translation
+                    </div>
+                </div>
+            </div>
+
+            <!-- VBA Explainer Section -->
+            <div class="translator-section" id="explainSection" style="display: none;">
+                <div class="input-group">
+                    <label for="vbaCode">Enter VBA Code:</label>
+                    <div class="input-wrapper">
+                        <textarea id="vbaCode" placeholder="e.g., Application.WorksheetFunction.Sum(Range(&quot;A1:A10&quot;))" rows="4"></textarea>
+                    </div>
+                </div>
+                <button class="translate-btn" onclick="explainVBACode()">Explain VBA Code</button>
+                
+                <div class="result-section">
+                    <label>Explanation:</label>
+                    <div class="explanation-output" id="explanationOutput">
+                        Enter VBA code above to see a detailed explanation
+                    </div>
+                </div>
+            </div>
+
+            <!-- VBA Basics Section -->
+            <div class="translator-section" id="basicsSection" style="display: none;">
+                <div class="basics-content">
+                    <h2 style="color: #333; margin-bottom: 20px; font-size: 1.8em;">VBA Fundamentals</h2>
+                    
+                    <div class="basics-grid">
+                        <div class="basics-card">
+                            <h3>📝 Variables &amp; Data Types</h3>
+                            <div class="code-example">
+                                <div class="code-title">Declaration &amp; Assignment</div>
+                                <div class="code-block">
+Dim myNumber As Integer<br>
+Dim myText As String<br>
+Dim myDate As Date<br>
+Dim myBoolean As Boolean<br><br>
+myNumber = 42<br>
+myText = "Hello World"<br>
+myDate = Date<br>
+myBoolean = True
+                                </div>
+                            </div>
+                            <p><strong>Common Data Types:</strong> Integer, Long, Double, String, Boolean, Date, Variant (can hold any type)</p>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>🏠 Object References</h3>
+                            <div class="code-example">
+                                <div class="code-title">Working with Worksheets &amp; Ranges</div>
+                                <div class="code-block">
+' Reference current workbook<br>
+Set wb = ThisWorkbook<br><br>
+' Reference specific worksheet<br>
+Set ws = wb.Worksheets("Sheet1")<br><br>
+' Reference cells<br>
+Set rng = ws.Range("A1:C10")<br>
+Set cell = ws.Cells(1, 1) ' Row 1, Column 1<br><br>
+' Set values<br>
+ws.Range("A1").Value = "Hello"<br>
+ws.Cells(2, 1).Value = 123
+                                </div>
+                            </div>
+                            <p><strong>Key Point:</strong> Use <code>Set</code> for objects, regular <code>=</code> for values</p>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>🔄 Control Structures</h3>
+                            <div class="code-example">
+                                <div class="code-title">Loops &amp; Conditionals</div>
+                                <div class="code-block">
+' For Loop<br>
+For i = 1 To 10<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Cells(i, 1).Value = i * 2<br>
+Next i<br><br>
+' If Statement<br>
+If Range("A1").Value &gt; 10 Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "Greater than 10"<br>
+ElseIf Range("A1").Value = 10 Then<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "Equals 10"<br>
+Else<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "Less than 10"<br>
+End If<br><br>
+' While Loop<br>
+While Range("A1").Value &lt; 100<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Range("A1").Value = Range("A1").Value + 1<br>
+Wend
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>🔧 Procedures</h3>
+                            <div class="code-example">
+                                <div class="code-title">Subs vs Functions</div>
+                                <div class="code-block">
+' Sub procedure (doesn't return value)<br>
+Sub HelloWorld()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "Hello, World!"<br>
+End Sub<br><br>
+' Function (returns a value)<br>
+Function AddNumbers(a As Double, b As Double) As Double<br>
+&nbsp;&nbsp;&nbsp;&nbsp;AddNumbers = a + b<br>
+End Function<br><br>
+' Calling procedures<br>
+Call HelloWorld<br>
+result = AddNumbers(5, 3)
+                                </div>
+                            </div>
+                            <p><strong>Functions</strong> return values, <strong>Subs</strong> perform actions</p>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>📊 Excel Integration</h3>
+                            <div class="code-example">
+                                <div class="code-title">Common Excel Operations</div>
+                                <div class="code-block">
+' Using Excel functions in VBA<br>
+result = Application.WorksheetFunction.Sum(Range("A1:A10"))<br>
+average = Application.WorksheetFunction.Average(Range("B:B"))<br><br>
+' Working with ranges<br>
+Range("A1:C1").Font.Bold = True<br>
+Range("A1").Interior.Color = RGB(255, 255, 0)<br><br>
+' Copying and pasting<br>
+Range("A1:A10").Copy<br>
+Range("B1").PasteSpecial xlPasteValues<br><br>
+' Finding last row/column<br>
+lastRow = Cells(Rows.Count, 1).End(xlUp).Row<br>
+lastCol = Cells(1, Columns.Count).End(xlToLeft).Column
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>⚠️ Error Handling</h3>
+                            <div class="code-example">
+                                <div class="code-title">Handling Errors Gracefully</div>
+                                <div class="code-block">
+Sub SafeDivision()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;On Error GoTo ErrorHandler<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Dim result As Double<br>
+&nbsp;&nbsp;&nbsp;&nbsp;result = 10 / 0 ' This will cause an error<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Exit Sub<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+ErrorHandler:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "An error occurred: " &amp; Err.Description<br>
+End Sub<br><br>
+' Alternative: Resume on error<br>
+On Error Resume Next<br>
+' Code that might fail<br>
+On Error GoTo 0 ' Turn off error handling
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>💡 Best Practices</h3>
+                            <div class="tips-list">
+                                <div class="tip-item">
+                                    <strong>🎯 Naming:</strong> Use descriptive variable names like <code>customerName</code> instead of <code>x</code>
+                                </div>
+                                <div class="tip-item">
+                                    <strong>📝 Comments:</strong> Use <code>' Comment</code> to explain complex logic
+                                </div>
+                                <div class="tip-item">
+                                    <strong>🔒 Option Explicit:</strong> Add at top of modules to force variable declaration
+                                </div>
+                                <div class="tip-item">
+                                    <strong>🎨 Indentation:</strong> Use consistent indentation for readability
+                                </div>
+                                <div class="tip-item">
+                                    <strong>⚡ Performance:</strong> Turn off screen updating with <code>Application.ScreenUpdating = False</code>
+                                </div>
+                                <div class="tip-item">
+                                    <strong>🧹 Cleanup:</strong> Set object variables to <code>Nothing</code> when done
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="basics-card">
+                            <h3>🚀 Getting Started</h3>
+                            <div class="getting-started">
+                                <h4>How to Access VBA Editor:</h4>
+                                <ol>
+                                    <li>Press <kbd>Alt + F11</kbd> in Excel</li>
+                                    <li>Or go to Developer tab → Visual Basic</li>
+                                    <li>Insert → Module to create new code module</li>
+                                </ol>
+                                
+                                <h4>Running Your Code:</h4>
+                                <ul>
+                                    <li><kbd>F5</kbd> to run current procedure</li>
+                                    <li><kbd>F8</kbd> to step through code line by line</li>
+                                    <li><kbd>Ctrl + G</kbd> to open Immediate window for testing</li>
+                                </ul>
+
+                                <h4>Quick Test Example:</h4>
+                                <div class="code-block" style="margin-top: 10px;">
+Sub FirstMacro()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Range("A1").Value = "My first VBA code!"<br>
+&nbsp;&nbsp;&nbsp;&nbsp;MsgBox "Hello VBA World!"<br>
+End Sub
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="examples-section">
+                <h2 style="color: #333; margin-bottom: 10px; font-size: 1.8em;" id="examplesTitle">Common Formula to VBA Examples</h2>
+                <p style="color: #666; margin-bottom: 20px; font-size: 1em; font-style: italic;" id="examplesSubtitle">Click to view</p>
+                <div class="examples-grid" id="translateExamples">
+                    <div class="example-card" onclick="useExample('=SUM(A1:A10)')">
+                        <div class="example-title">SUM Function</div>
+                        <div class="example-formula">=SUM(A1:A10)</div>
+                        <div class="example-description">Adds all values in the range A1 to A10</div>
+                    </div>
+
+                    <div class="example-card" onclick="useExample('=VLOOKUP(B2,D:E,2,FALSE)')">
+                        <div class="example-title">VLOOKUP Function</div>
+                        <div class="example-formula">=VLOOKUP(B2,D:E,2,FALSE)</div>
+                        <div class="example-description">Looks up a value in the first column and returns a value in the same row from another column</div>
+                    </div>
+
+                    <div class="example-card" onclick="useExample('=IF(A1&gt;10,&quot;High&quot;,&quot;Low&quot;)')">
+                        <div class="example-title">IF Function</div>
+                        <div class="example-formula">=IF(A1&gt;10,"High","Low")</div>
+                        <div class="example-description">Returns "High" if A1 is greater than 10, otherwise "Low"</div>
+                    </div>
+
+                    <div class="example-card" onclick="useExample('=CONCATENATE(A1,&quot; &quot;,B1)')">
+                        <div class="example-title">CONCATENATE Function</div>
+                        <div class="example-formula">=CONCATENATE(A1," ",B1)</div>
+                        <div class="example-description">Joins text from A1 and B1 with a space in between</div>
+                    </div>
+
+                    <div class="example-card" onclick="useExample('=COUNTIF(A:A,&quot;&gt;10&quot;)')">
+                        <div class="example-title">COUNTIF Function</div>
+                        <div class="example-formula">=COUNTIF(A:A,"&gt;10")</div>
+                        <div class="example-description">Counts cells in column A that are greater than 10</div>
+                    </div>
+
+                    <div class="example-card" onclick="useExample('=INDEX(B:B,MATCH(E1,A:A,0))')">
+                        <div class="example-title">INDEX/MATCH Combination</div>
+                        <div class="example-formula">=INDEX(B:B,MATCH(E1,A:A,0))</div>
+                        <div class="example-description">More flexible alternative to VLOOKUP for exact matches</div>
+                    </div>
+                </div>
+
+                <div class="examples-grid" id="explainExamples" style="display: none;">
+                    <div class="example-card" onclick="useVBAExample('IIf(Range(&quot;A1&quot;).Value &gt; 10, &quot;High&quot;, &quot;Low&quot;)')">
+                        <div class="example-title">IIf Function</div>
+                        <div class="example-formula">IIf(Range("A1").Value &gt; 10, "High", "Low")</div>
+                        <div class="example-description">VBA conditional function equivalent to Excel IF</div>
+                    </div>
+
+                    <div class="example-card" onclick="useVBAExample('For i = 1 To 10\n    Cells(i, 1).Value = i * 2\nNext i')">
+                        <div class="example-title">For Loop</div>
+                        <div class="example-formula">For i = 1 To 10<br>&nbsp;&nbsp;Cells(i, 1).Value = i * 2<br>Next i</div>
+                        <div class="example-description">Loop that fills cells with calculated values</div>
+                    </div>
+
+                    <div class="example-card" onclick="useVBAExample('Set ws = ThisWorkbook.Worksheets(&quot;Sheet1&quot;)\nws.Range(&quot;A1&quot;).Value = &quot;Hello World&quot;')">
+                        <div class="example-title">Worksheet Reference</div>
+                        <div class="example-formula">Set ws = ThisWorkbook.Worksheets("Sheet1")<br>ws.Range("A1").Value = "Hello World"</div>
+                        <div class="example-description">Setting worksheet variables and updating cell values</div>
+                    </div>
+
+                    <div class="example-card" onclick="useVBAExample('Application.WorksheetFunction.VLookup(Range(&quot;B2&quot;).Value, Range(&quot;D:E&quot;), 2, False)')">
+                        <div class="example-title">VLookup Function</div>
+                        <div class="example-formula">Application.WorksheetFunction.VLookup(Range("B2").Value, Range("D:E"), 2, False)</div>
+                        <div class="example-description">VBA implementation of VLOOKUP function</div>
+                    </div>
+
+                    <div class="example-card" onclick="useVBAExample('If Range(&quot;A1&quot;).Value &gt; 0 Then\n    MsgBox &quot;Positive number&quot;\nElse\n    MsgBox &quot;Not positive&quot;\nEnd If')">
+                        <div class="example-title">If Statement</div>
+                        <div class="example-formula">If Range("A1").Value &gt; 0 Then<br>&nbsp;&nbsp;MsgBox "Positive number"<br>Else<br>&nbsp;&nbsp;MsgBox "Not positive"<br>End If</div>
+                        <div class="example-description">Basic conditional logic with message boxes</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Current mode tracking
+        let currentMode = 'translate';
+
+        // Excel function to VBA translation mappings
+        const functionMappings = {
+            'SUM': {
+                pattern: /SUM\(([^)]+)\)/gi,
+                vba: (range) => `Application.WorksheetFunction.Sum(Range("${range}"))`
+            },
+            'VLOOKUP': {
+                pattern: /VLOOKUP\(([^,]+),([^,]+),([^,]+),([^)]+)\)/gi,
+                vba: (lookupValue, tableArray, colIndex, exactMatch) => {
+                    const exact = exactMatch.trim().toUpperCase() === 'FALSE' || exactMatch.trim() === '0' ? 'False' : 'True';
+                    return `Application.WorksheetFunction.VLookup(${lookupValue.trim()}, Range("${tableArray.trim()}"), ${colIndex.trim()}, ${exact})`;
+                }
+            },
+            'IF': {
+                pattern: /IF\(([^,]+),([^,]+),([^)]+)\)/gi,
+                vba: (condition, trueValue, falseValue) => {
+                    return `IIf(${condition.trim()}, ${trueValue.trim()}, ${falseValue.trim()})`;
+                }
+            },
+            'CONCATENATE': {
+                pattern: /CONCATENATE\(([^)]+)\)/gi,
+                vba: (args) => {
+                    const argArray = args.split(',').map(arg => arg.trim());
+                    return argArray.join(' & ');
+                }
+            },
+            'COUNTIF': {
+                pattern: /COUNTIF\(([^,]+),([^)]+)\)/gi,
+                vba: (range, criteria) => `Application.WorksheetFunction.CountIf(Range("${range.trim()}"), ${criteria.trim()})`
+            },
+            'AVERAGE': {
+                pattern: /AVERAGE\(([^)]+)\)/gi,
+                vba: (range) => `Application.WorksheetFunction.Average(Range("${range}"))`
+            },
+            'MAX': {
+                pattern: /MAX\(([^)]+)\)/gi,
+                vba: (range) => `Application.WorksheetFunction.Max(Range("${range}"))`
+            },
+            'MIN': {
+                pattern: /MIN\(([^)]+)\)/gi,
+                vba: (range) => `Application.WorksheetFunction.Min(Range("${range}"))`
+            },
+            'INDEX': {
+                pattern: /INDEX\(([^,]+),([^)]+)\)/gi,
+                vba: (array, rowNum) => `Application.WorksheetFunction.Index(Range("${array.trim()}"), ${rowNum.trim()})`
+            },
+            'MATCH': {
+                pattern: /MATCH\(([^,]+),([^,]+),([^)]+)\)/gi,
+                vba: (lookupValue, lookupArray, matchType) => {
+                    return `Application.WorksheetFunction.Match(${lookupValue.trim()}, Range("${lookupArray.trim()}"), ${matchType.trim()})`;
+                }
+            },
+            'LEN': {
+                pattern: /LEN\(([^)]+)\)/gi,
+                vba: (text) => `Len(${text.trim()})`
+            },
+            'LEFT': {
+                pattern: /LEFT\(([^,]+),([^)]+)\)/gi,
+                vba: (text, numChars) => `Left(${text.trim()}, ${numChars.trim()})`
+            },
+            'RIGHT': {
+                pattern: /RIGHT\(([^,]+),([^)]+)\)/gi,
+                vba: (text, numChars) => `Right(${text.trim()}, ${numChars.trim()})`
+            },
+            'MID': {
+                pattern: /MID\(([^,]+),([^,]+),([^)]+)\)/gi,
+                vba: (text, startNum, numChars) => `Mid(${text.trim()}, ${startNum.trim()}, ${numChars.trim()})`
+            }
+        };
+
+        // VBA code explanation knowledge base
+        const vbaExplanations = {
+            'Application.WorksheetFunction': 'Accesses Excel\'s built-in worksheet functions from VBA',
+            'Range': 'References a cell or range of cells in Excel',
+            'Cells': 'References cells using row and column numbers',
+            'IIf': 'VBA\'s immediate if function - returns one of two values based on a condition',
+            'For...Next': 'Loop structure that repeats code a specific number of times',
+            'If...Then...Else': 'Conditional statement that executes different code based on conditions',
+            'Set': 'Assigns an object reference to a variable',
+            'Dim': 'Declares a variable and optionally specifies its data type',
+            'Sub': 'Defines a subroutine (procedure) that doesn\'t return a value',
+            'Function': 'Defines a function that returns a value',
+            'MsgBox': 'Displays a message box with text and optional buttons',
+            'ThisWorkbook': 'References the workbook containing the VBA code',
+            'Worksheets': 'Collection of all worksheets in a workbook',
+            'Value': 'Property that gets or sets the value of a cell or range'
+        };
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update button states
+            document.getElementById('translateMode').classList.toggle('active', mode === 'translate');
+            document.getElementById('explainMode').classList.toggle('active', mode === 'explain');
+            document.getElementById('basicsMode').classList.toggle('active', mode === 'basics');
+            
+            // Show/hide sections
+            document.getElementById('translateSection').style.display = mode === 'translate' ? 'block' : 'none';
+            document.getElementById('explainSection').style.display = mode === 'explain' ? 'block' : 'none';
+            document.getElementById('basicsSection').style.display = mode === 'basics' ? 'block' : 'none';
+            
+            // Update examples (only show for translate and explain modes)
+            const showExamples = mode === 'translate' || mode === 'explain';
+            document.getElementById('translateExamples').style.display = mode === 'translate' ? 'block' : 'none';
+            document.getElementById('explainExamples').style.display = mode === 'explain' ? 'block' : 'none';
+            
+            // Update title and subtitle based on mode
+            const examplesTitle = document.getElementById('examplesTitle');
+            const examplesSubtitle = document.getElementById('examplesSubtitle');
+            const headerDescription = document.getElementById('headerDescription');
+            
+            if (mode === 'translate') {
+                examplesTitle.textContent = 'Common Formula to VBA Examples';
+                examplesSubtitle.style.display = 'block';
+                examplesSubtitle.textContent = 'Click to view';
+                headerDescription.innerHTML = '<strong>Convert Excel formulas to VBA code</strong> • <span style="opacity: 0.6;">Understand VBA code with AI explanations • Learn VBA fundamentals</span>';
+            } else if (mode === 'explain') {
+                examplesTitle.textContent = 'VBA Code Examples';
+                examplesSubtitle.style.display = 'block';
+                examplesSubtitle.textContent = 'Click to view';
+                headerDescription.innerHTML = '<span style="opacity: 0.6;">Convert Excel formulas to VBA code • </span><strong>Understand VBA code with AI explanations</strong> • <span style="opacity: 0.6;">Learn VBA fundamentals</span>';
+            } else if (mode === 'basics') {
+                headerDescription.innerHTML = '<span style="opacity: 0.6;">Convert Excel formulas to VBA code • Understand VBA code with AI explanations • </span><strong>Learn VBA fundamentals</strong>';
+            }
+            
+            // Hide examples section entirely for basics mode
+            const examplesSection = document.querySelector('.examples-section');
+            examplesSection.style.display = showExamples ? 'block' : 'none';
+        }
+
+        function translateFunction() {
+            const input = document.getElementById('excelFunction').value.trim();
+            const output = document.getElementById('vbaOutput');
+            
+            if (!input) {
+                output.innerHTML = 'Please enter an Excel function to translate.';
+                return;
+            }
+
+            try {
+                let vbaCode = translateToVBA(input);
+                
+                if (vbaCode === input) {
+                    // No translation found
+                    output.innerHTML = `<div class="error-message">
+                        <strong>Translation not available</strong><br>
+                        The function "${input}" is not currently supported. Try one of the examples below or a simpler function.
+                    </div>`;
+                } else {
+                    // Successful translation
+                    const formattedCode = formatVBACode(vbaCode);
+                    output.innerHTML = `<button class="copy-btn" onclick="copyToClipboard('vbaOutput')">Copy</button>${formattedCode}`;
+                }
+            } catch (error) {
+                output.innerHTML = `<div class="error-message">
+                    <strong>Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+
+        function explainVBACode() {
+            const input = document.getElementById('vbaCode').value.trim();
+            const output = document.getElementById('explanationOutput');
+            
+            if (!input) {
+                output.innerHTML = 'Please enter VBA code to explain.';
+                return;
+            }
+
+            try {
+                const explanation = generateVBAExplanation(input);
+                output.innerHTML = explanation;
+            } catch (error) {
+                output.innerHTML = `<div class="error-message">
+                    <strong>Error:</strong> ${error.message}
+                </div>`;
+            }
+        }
+
+        function generateVBAExplanation(vbaCode) {
+            let explanation = '<div class="explanation-section">';
+            explanation += '<div class="explanation-title">📝 Code Analysis</div>';
+            
+            // Clean up the code for analysis
+            const cleanCode = vbaCode.replace(/\\n/g, '\n').trim();
+            
+            // Break down the code into components
+            const components = analyzeVBAComponents(cleanCode);
+            
+            explanation += '<div class="code-breakdown">' + escapeHtml(cleanCode) + '</div>';
+            
+            // Overall purpose
+            explanation += '<div class="explanation-title">🎯 Purpose</div>';
+            explanation += '<p>' + determinePurpose(cleanCode) + '</p>';
+            
+            // Key components
+            if (components.length > 0) {
+                explanation += '<div class="explanation-title">🔍 Key Components</div>';
+                components.forEach(component => {
+                    explanation += '<div class="parameter-item">';
+                    explanation += '<strong>' + component.element + ':</strong> ' + component.explanation;
+                    explanation += '</div>';
+                });
+            }
+            
+            // Step by step breakdown
+            const steps = breakdownSteps(cleanCode);
+            if (steps.length > 0) {
+                explanation += '<div class="explanation-title">📋 Step-by-Step Breakdown</div>';
+                steps.forEach((step, index) => {
+                    explanation += '<div style="margin: 8px 0; padding: 10px; background: #f8f9fa; border-radius: 6px;">';
+                    explanation += '<strong>Step ' + (index + 1) + ':</strong> ' + step;
+                    explanation += '</div>';
+                });
+            }
+            
+            // Usage tips
+            explanation += '<div class="explanation-title">💡 Usage Tips</div>';
+            explanation += '<p>' + getUsageTips(cleanCode) + '</p>';
+            
+            explanation += '</div>';
+            
+            return explanation;
+        }
+
+        function analyzeVBAComponents(code) {
+            const components = [];
+            
+            // Check for common VBA elements
+            Object.entries(vbaExplanations).forEach(([keyword, explanation]) => {
+                if (code.includes(keyword)) {
+                    components.push({
+                        element: keyword,
+                        explanation: explanation
+                    });
+                }
+            });
+            
+            // Analyze specific patterns
+            const patterns = {
+                'Range\\("[^"]*"\\)': 'Cell/range reference - specifies which cells to work with',
+                'Cells\\(\\d+,\\s*\\d+\\)': 'Cell reference using row and column numbers',
+                '\\.Value': 'Accesses the actual value stored in a cell',
+                'For\\s+\\w+\\s*=': 'Loop variable initialization',
+                'Next\\s+\\w+': 'End of loop, increments counter and continues',
+                'If\\s+.*\\s+Then': 'Conditional test - checks if condition is true',
+                'End\\s+If': 'Marks the end of an If statement block'
+            };
+            
+            Object.entries(patterns).forEach(([pattern, explanation]) => {
+                const regex = new RegExp(pattern, 'gi');
+                if (regex.test(code)) {
+                    const matches = code.match(regex);
+                    if (matches) {
+                        components.push({
+                            element: matches[0],
+                            explanation: explanation
+                        });
+                    }
+                }
+            });
+            
+            return components;
+        }
+
+        function determinePurpose(code) {
+            const purposes = [
+                { pattern: /Application\.WorksheetFunction\.Sum/i, purpose: 'Calculates the sum of values in a specified range' },
+                { pattern: /Application\.WorksheetFunction\.VLookup/i, purpose: 'Performs a vertical lookup to find data in a table' },
+                { pattern: /For.*Next/is, purpose: 'Executes a loop to repeat operations multiple times' },
+                { pattern: /If.*Then.*End If/is, purpose: 'Makes decisions based on conditions and executes different code paths' },
+                { pattern: /IIf/i, purpose: 'Performs a quick conditional check and returns one of two values' },
+                { pattern: /Range.*Value/i, purpose: 'Reads from or writes data to Excel cells' },
+                { pattern: /MsgBox/i, purpose: 'Displays information or prompts to the user' },
+                { pattern: /Set.*Worksheets/i, purpose: 'Creates a reference to a specific worksheet for easier access' }
+            ];
+            
+            for (const {pattern, purpose} of purposes) {
+                if (pattern.test(code)) {
+                    return purpose;
+                }
+            }
+            
+            return 'This VBA code performs operations on Excel data and worksheets.';
+        }
+
+        function breakdownSteps(code) {
+            const steps = [];
+            const lines = code.split('\n').map(line => line.trim()).filter(line => line);
+            
+            lines.forEach(line => {
+                if (line.startsWith('Dim ')) {
+                    steps.push(`Declares a variable: <span class="highlight-code">${line}</span>`);
+                } else if (line.startsWith('Set ')) {
+                    steps.push(`Assigns an object reference: <span class="highlight-code">${line}</span>`);
+                } else if (line.includes('Range(') && line.includes('.Value')) {
+                    if (line.includes('=')) {
+                        steps.push(`Sets a cell value: <span class="highlight-code">${line}</span>`);
+                    } else {
+                        steps.push(`Reads a cell value: <span class="highlight-code">${line}</span>`);
+                    }
+                } else if (line.startsWith('For ')) {
+                    steps.push(`Starts a loop: <span class="highlight-code">${line}</span>`);
+                } else if (line.startsWith('Next')) {
+                    steps.push(`Ends the loop and continues to next iteration: <span class="highlight-code">${line}</span>`);
+                } else if (line.startsWith('If ')) {
+                    steps.push(`Checks a condition: <span class="highlight-code">${line}</span>`);
+                } else if (line.startsWith('Else')) {
+                    steps.push(`Alternative action if condition is false: <span class="highlight-code">${line}</span>`);
+                } else if (line.startsWith('End If')) {
+                    steps.push(`Ends the conditional statement: <span class="highlight-code">${line}</span>`);
+                } else if (line.includes('MsgBox')) {
+                    steps.push(`Displays a message to the user: <span class="highlight-code">${line}</span>`);
+                } else if (line.includes('Application.WorksheetFunction')) {
+                    steps.push(`Calls an Excel function: <span class="highlight-code">${line}</span>`);
+                } else {
+                    steps.push(`Executes: <span class="highlight-code">${line}</span>`);
+                }
+            });
+            
+            return steps;
+        }
+
+        function getUsageTips(code) {
+            const tips = [];
+            
+            if (code.includes('Application.WorksheetFunction')) {
+                tips.push('Use Application.WorksheetFunction to access Excel functions from VBA');
+            }
+            if (code.includes('Range(')) {
+                tips.push('Range() is flexible for referencing cells, but Cells() with numbers can be easier in loops');
+            }
+            if (code.includes('For') && code.includes('Next')) {
+                tips.push('Always pair For with Next, and make sure loop variables don\'t conflict');
+            }
+            if (code.includes('.Value')) {
+                tips.push('The .Value property is often optional but makes code more explicit');
+            }
+            if (code.includes('Set ')) {
+                tips.push('Use Set when assigning object references, regular = for values');
+            }
+            
+            if (tips.length === 0) {
+                tips.push('Consider adding error handling with On Error Resume Next or On Error GoTo for robust code');
+            }
+            
+            return tips.join('. ') + '.';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function translateToVBA(excelFunction) {
+            let result = excelFunction;
+            
+            // Remove leading = if present
+            if (result.startsWith('=')) {
+                result = result.substring(1);
+            }
+
+            // Apply each function mapping
+            for (const [funcName, mapping] of Object.entries(functionMappings)) {
+                result = result.replace(mapping.pattern, (...args) => {
+                    // Remove the full match and function name from args
+                    const captureGroups = args.slice(1, -2);
+                    return mapping.vba(...captureGroups);
+                });
+            }
+
+            // Handle cell references (convert to VBA format)
+            result = result.replace(/([A-Z]+\d+)/g, 'Range("$1")');
+            
+            // Handle range references (already handled in individual functions, but catch any missed)
+            result = result.replace(/Range\("Range\("([^"]+)"\)"\)/g, 'Range("$1")');
+
+            // Clean up any double conversions
+            result = result.replace(/Range\("Range\("([^"]+)"\)"\)/g, 'Range("$1")');
+
+            return result;
+        }
+
+        function formatVBACode(code) {
+            // Create the VBA code without problematic HTML tags
+            const cleanCode = code;
+            
+            return `<span style="color: #6a9955; font-style: italic;">' Generated VBA code</span><br>
+<span style="color: #569cd6;">Dim</span> result <span style="color: #569cd6;">As</span> <span style="color: #569cd6;">Variant</span><br>
+result = ${cleanCode}<br><br>
+<span style="color: #6a9955; font-style: italic;">' To use in a cell, you might write:</span><br>
+<span style="color: #569cd6;">Sub</span> <span style="color: #dcdcaa;">ExampleMacro</span>()<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">Dim</span> result <span style="color: #569cd6;">As</span> <span style="color: #569cd6;">Variant</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;result = ${cleanCode}<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #6a9955; font-style: italic;">' Use result variable as needed</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #569cd6;">Range</span>(<span style="color: #ce9178;">"A1"</span>).<span style="color: #9cdcfe;">Value</span> = result<br>
+<span style="color: #569cd6;">End Sub</span>`;
+        }
+
+        function useExample(formula) {
+            // Decode HTML entities back to normal characters
+            const decodedFormula = formula
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&');
+            
+            document.getElementById('excelFunction').value = decodedFormula;
+            switchMode('translate'); // Ensure we're in translate mode
+            translateFunction();
+        }
+
+        function useVBAExample(vbaCode) {
+            // Decode HTML entities and convert \n to actual newlines
+            const cleanCode = vbaCode
+                .replace(/&quot;/g, '"')
+                .replace(/&gt;/g, '>')
+                .replace(/&lt;/g, '<')
+                .replace(/&amp;/g, '&')
+                .replace(/\\n/g, '\n');
+            
+            document.getElementById('vbaCode').value = cleanCode;
+            switchMode('explain'); // Ensure we're in explain mode
+            explainVBACode();
+        }
+
+        function copyToClipboard(elementId) {
+            const output = document.getElementById(elementId);
+            const text = output.innerText || output.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const copyBtn = output.querySelector('.copy-btn');
+                if (copyBtn) {
+                    const originalText = copyBtn.textContent;
+                    copyBtn.textContent = 'Copied!';
+                    copyBtn.style.background = '#40ae59';
+                    
+                    setTimeout(() => {
+                        copyBtn.textContent = originalText;
+                        copyBtn.style.background = '#40ae59';
+                    }, 2000);
+                }
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                alert('Failed to copy to clipboard. Please select and copy manually.');
+            });
+        }
+
+        // Add Enter key support for both inputs
+        document.getElementById('excelFunction').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                translateFunction();
+            }
+        });
+
+        document.getElementById('vbaCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                explainVBACode();
+            }
+        });
+
+        // Auto-translate/explain on input (with debounce)
+        let timeout;
+        document.getElementById('excelFunction').addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                if (this.value.trim() && currentMode === 'translate') {
+                    translateFunction();
+                }
+            }, 1000);
+        });
+
+        document.getElementById('vbaCode').addEventListener('input', function() {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+                if (this.value.trim() && currentMode === 'explain') {
+                    explainVBACode();
+                }
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
